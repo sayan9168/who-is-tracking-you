@@ -257,3 +257,193 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 
   </div>
+<script>
+// ── CUSTOM CURSOR ──
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+document.querySelectorAll('button,a,[onclick]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';ring.style.width='44px';ring.style.height='44px';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';ring.style.width='32px';ring.style.height='32px';});
+});
+
+// ── MATRIX RAIN ──
+const canvas=document.getElementById('matrixCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+const cols=Math.floor(canvas.width/18);
+const drops=Array(cols).fill(1);
+const chars='アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*';
+function drawMatrix(){
+  ctx.fillStyle='rgba(6,8,16,0.06)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#00ff41';
+  ctx.font='14px Share Tech Mono';
+  drops.forEach((y,i)=>{
+    const c=chars[Math.floor(Math.random()*chars.length)];
+    ctx.fillStyle=Math.random()>.95?'#fff':'#00ff41';
+    ctx.fillText(c,i*18,y*18);
+    if(y*18>canvas.height&&Math.random()>.975) drops[i]=0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix,45);
+
+// ── RISK SCORE ──
+let riskScore=0;
+function addRisk(n){
+  riskScore=Math.min(riskScore+n,100);
+  const el=document.getElementById('riskScore');
+  const lv=document.getElementById('riskLevel');
+  // Animate count up
+  let current=parseInt(el.textContent)||0;
+  const target=riskScore;
+  const step=()=>{if(current<target){current++;el.textContent=current;setTimeout(step,20);}};
+  step();
+  if(riskScore>=75){
+    el.style.color='var(--red)';el.style.textShadow='0 0 40px rgba(255,45,85,.7)';
+    lv.style.color='var(--red)';lv.textContent='HIGH RISK ⚠️';
+  } else if(riskScore>=45){
+    el.style.color='var(--yellow)';el.style.textShadow='0 0 40px rgba(255,214,10,.5)';
+    lv.style.color='var(--yellow)';lv.textContent='MEDIUM RISK';
+  } else {
+    el.style.color='var(--green)';el.style.textShadow='0 0 40px rgba(0,255,65,.5)';
+    lv.style.color='var(--green)';lv.textContent='LOW RISK';
+  }
+}
+
+// ── SCAN PROGRESS ──
+let scanProg=0;
+const scanSteps=['Detecting IP address...','Reading device fingerprint...','Checking browser capabilities...','Scanning hardware details...','Analyzing tracking vectors...','Calculating risk score...','Scan complete ✓'];
+let stepIdx=0;
+function advanceScan(){
+  if(scanProg>=100)return;
+  scanProg=Math.min(scanProg+Math.random()*12+4,100);
+  document.getElementById('scanBar').style.width=scanProg+'%';
+  document.getElementById('scanPct').textContent=Math.round(scanProg)+'%';
+  const s=Math.floor((scanProg/100)*scanSteps.length);
+  if(s!==stepIdx&&s<scanSteps.length){stepIdx=s;document.getElementById('scanStatus').textContent=scanSteps[stepIdx];}
+  if(scanProg<100)setTimeout(advanceScan,280+Math.random()*350);
+}
+advanceScan();
+
+// ── SET VALUE ──
+function setVal(id,val,cls,risk=0){
+  const el=document.getElementById(id);
+  if(!el)return;
+  setTimeout(()=>{
+    el.classList.remove('loading');
+    el.className='dr-val '+cls;
+    el.textContent=val;
+    if(risk)addRisk(risk);
+  },600+Math.random()*1400);
+}
+
+// ── TIMEZONE ──
+setVal('d-timezone',Intl.DateTimeFormat().resolvedOptions().timeZone,'v-blue',4);
+
+// ── OS ──
+function getOS(){
+  const ua=navigator.userAgent;
+  if(/Windows NT 10/.test(ua))return'Windows 10/11';
+  if(/Windows NT 6\.3/.test(ua))return'Windows 8.1';
+  if(/Windows NT 6\.1/.test(ua))return'Windows 7';
+  if(/Mac OS X ([\d_]+)/.test(ua))return'macOS '+ua.match(/Mac OS X ([\d_]+)/)[1].replace(/_/g,'.');
+  if(/Android ([\d.]+)/.test(ua))return'Android '+ua.match(/Android ([\d.]+)/)[1];
+  if(/iPhone/.test(ua)&&/OS ([\d_]+)/.test(ua))return'iOS '+ua.match(/OS ([\d_]+)/)[1].replace(/_/g,'.');
+  if(/iPad/.test(ua))return'iPadOS';
+  if(/Linux/.test(ua))return'Linux';
+  return'Unknown OS';
+}
+
+// ── BROWSER ──
+function getBrowser(){
+  const ua=navigator.userAgent;
+  if(/Edg\//.test(ua))return'Microsoft Edge '+(ua.match(/Edg\/([\d.]+)/)?.[1]||'');
+  if(/OPR\//.test(ua))return'Opera '+(ua.match(/OPR\/([\d.]+)/)?.[1]||'');
+  if(/SamsungBrowser/.test(ua))return'Samsung Browser '+(ua.match(/SamsungBrowser\/([\d.]+)/)?.[1]||'');
+  if(/Chrome\//.test(ua))return'Google Chrome '+(ua.match(/Chrome\/([\d.]+)/)?.[1]||'');
+  if(/Firefox\//.test(ua))return'Mozilla Firefox '+(ua.match(/Firefox\/([\d.]+)/)?.[1]||'');
+  if(/Safari\//.test(ua))return'Apple Safari '+(ua.match(/Version\/([\d.]+)/)?.[1]||'');
+  return'Unknown Browser';
+}
+
+// ── DEVICE ──
+function getDevice(){
+  const ua=navigator.userAgent;
+  if(/iPhone/.test(ua))return'📱 iPhone';
+  if(/iPad/.test(ua))return'📱 iPad';
+  if(/Android.*Mobile/.test(ua))return'📱 Android Smartphone';
+  if(/Android/.test(ua))return'📱 Android Tablet';
+  if(/Macintosh/.test(ua))return'💻 MacBook / iMac';
+  if(/Windows/.test(ua))return'💻 Windows PC';
+  return'💻 Desktop Computer';
+}
+
+setVal('d-os',getOS(),'v-yellow',8);
+setVal('d-browser',getBrowser(),'v-yellow',8);
+setVal('d-device',getDevice(),'v-yellow',5);
+setVal('d-screen',screen.width+'×'+screen.height+' · '+screen.colorDepth+'-bit color · '+window.devicePixelRatio+'x DPR','v-yellow',6);
+setVal('d-lang',navigator.language+' / ['+navigator.languages?.join(', ')+']','v-blue',3);
+setVal('d-cpu',(navigator.hardwareConcurrency||'?')+' logical cores','v-yellow',3);
+setVal('d-memory',navigator.deviceMemory?navigator.deviceMemory+' GB (approx)':'Not disclosed','v-yellow',3);
+
+// ── COOKIES & STORAGE ──
+setVal('d-cookies',navigator.cookieEnabled?'✓ Enabled — Sites can store tracking cookies':'✗ Disabled',navigator.cookieEnabled?'v-red':'v-green',navigator.cookieEnabled?10:0);
+setVal('d-storage',typeof localStorage!=='undefined'?'✓ Enabled — Persistent cross-session tracking possible':'✗ Disabled','v-red',8);
+
+// ── TIME ──
+function updateTime(){
+  const el=document.getElementById('d-time');
+  if(el&&!el.classList.contains('loading'))el.textContent=new Date().toLocaleTimeString()+' · '+new Date().toLocaleDateString();
+}
+setVal('d-time',new Date().toLocaleTimeString()+' · '+new Date().toLocaleDateString(),'v-blue',2);
+setInterval(updateTime,1000);
+
+// ── DARK MODE ──
+const dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+setVal('d-theme',dark?'🌙 Dark Mode — preference leaked':'☀️ Light Mode — preference leaked','v-blue',3);
+
+// ── WEBGL ──
+try{
+  const gl=document.createElement('canvas').getContext('webgl');
+  const ext=gl?.getExtension('WEBGL_debug_renderer_info');
+  const renderer=ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'Available (renderer hidden)';
+  const vendor=ext?gl.getParameter(ext.UNMASKED_VENDOR_WEBGL):'';
+  setVal('d-webgl','✓ GPU: '+renderer+(vendor?' · '+vendor:''),'v-red',12);
+}catch(e){setVal('d-webgl','Not available','v-green',0);}
+
+// ── CONNECTION ──
+const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+if(conn){
+  setVal('d-connection',(conn.effectiveType?.toUpperCase()||'?')+' · '+( conn.downlink||'?')+' Mbps · RTT '+(conn.rtt||'?')+'ms','v-yellow',5);
+}else{setVal('d-connection','Not disclosed by this browser','v-green',0);}
+
+// ── NOTIFICATIONS ──
+if('Notification' in window){
+  const p=Notification.permission;
+  setVal('d-notif',p==='granted'?'✓ GRANTED — Sites can send push notifications':p==='denied'?'✗ Denied — Good!':'⚠️ Not decided yet',p==='granted'?'v-red':p==='denied'?'v-green':'v-yellow',p==='granted'?8:0);
+}else{setVal('d-notif','Not supported','v-green',0);}
+
+// ── CAMERA ──
+if(navigator.permissions){
+  navigator.permissions.query({name:'camera'}).then(r=>{
+    const s=r.state;
+    setVal('d-camera',s==='granted'?'✓ GRANTED — Camera access allowed':s==='denied'?'✗ Denied':'⚠️ Not decided yet',s==='granted'?'v-red':s==='denied'?'v-green':'v-yellow',s==='granted'?8:0);
+  }).catch(()=>setVal('d-camera','Permission check blocked','v-yellow',0));
+}else{setVal('d-camera','Not accessible','v-green',0);}
+
+// ── BATTERY ──
+if('getBattery' in navigator){
+  navigator.getBattery().then(bat=>{
+    const pct=Math.round(bat.level*100);
+    const ch=bat.charging?'⚡ Charging':'🔋 On Battery';
+    const eta=bat.dischargingTime&&bat.dischargingTime!==Infinity?Math.round(bat.dischargingTime/60)+' min remaining':'';
+    setVal('d-battery',pct+'% · '+ch+(eta?' · '+eta:''),'v-yellow',5);
+  });
+}else{setVal('d-battery','Not accessible by browser','v-green',0);}
+                            </script>
