@@ -447,3 +447,104 @@ if('getBattery' in navigator){
   });
 }else{setVal('d-battery','Not accessible by browser','v-green',0);}
                             </script>
+<script>
+// ── IP & LOCATION ──
+fetch('https://api.ipify.org?format=json')
+  .then(r=>r.json())
+  .then(data=>{
+    setVal('d-ip',data.ip,'v-red',15);
+    return fetch('https://ipapi.co/'+data.ip+'/json/');
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    if(data.city){
+      setVal('d-location',data.city+', '+data.region+', '+data.country_name+' 📍','v-red',15);
+      setVal('d-isp',data.org||'Unknown ISP','v-red',10);
+    }
+  })
+  .catch(()=>{
+    setVal('d-ip','Blocked by ad blocker — try disabling it','v-yellow',8);
+    setVal('d-location','Could not determine','v-yellow',5);
+    setVal('d-isp','Could not determine','v-yellow',5);
+  });
+
+// ── BROWSER FINGERPRINT ──
+function generateFingerprint(){
+  const components=[
+    navigator.userAgent,
+    navigator.language,
+    screen.width+'x'+screen.height,
+    screen.colorDepth,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency||0,
+    navigator.deviceMemory||0,
+    navigator.cookieEnabled,
+    window.devicePixelRatio,
+    navigator.platform||'',
+    navigator.vendor||'',
+    typeof localStorage!=='undefined',
+    typeof sessionStorage!=='undefined',
+    typeof indexedDB!=='undefined',
+  ].join('|||');
+
+  // Hash function
+  let h1=0xdeadbeef,h2=0x41c6ce57;
+  for(let i=0;i<components.length;i++){
+    const ch=components.charCodeAt(i);
+    h1=Math.imul(h1^ch,2654435761);
+    h2=Math.imul(h2^ch,1597334677);
+  }
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  const hash=4294967296*(2097151&h2)+(h1>>>0);
+
+  const hex=Math.abs(hash).toString(16).toUpperCase().padStart(16,'0');
+  const fp=hex.slice(0,4)+'-'+hex.slice(4,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-SAYAN-'+Math.abs(hash*31+7).toString(16).toUpperCase().slice(0,8);
+
+  setTimeout(()=>{
+    document.getElementById('fpHash').textContent=fp;
+    document.getElementById('fpHash').style.color='var(--red)';
+    addRisk(5);
+  },2800);
+}
+generateFingerprint();
+
+// ── SHARE ──
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href).then(()=>{
+    const btn=event.target;
+    const orig=btn.textContent;
+    btn.textContent='✅ Copied!';
+    setTimeout(()=>btn.textContent=orig,2000);
+  });
+}
+
+function shareTwitter(){
+  const score=document.getElementById('riskScore').textContent;
+  const level=document.getElementById('riskLevel').textContent;
+  const text=encodeURIComponent(
+    'My browser privacy risk score is '+score+'/100 ('+level+') 😱\n\n'+
+    'Your IP, location, GPU, battery & browser fingerprint are all visible to every website.\n\n'+
+    'See what they know about YOU 👇\n\nBuilt by Sayan'
+  );
+  window.open('https://twitter.com/intent/tweet?text='+text+'&url='+encodeURIComponent(window.location.href),'_blank');
+}
+
+// ── SAYAN EASTER EGG ──
+// Type "sayan" anywhere to reveal secret message
+let keyBuffer='';
+document.addEventListener('keydown',e=>{
+  keyBuffer+=e.key.toLowerCase();
+  if(keyBuffer.length>5)keyBuffer=keyBuffer.slice(-5);
+  if(keyBuffer==='sayan'){
+    const msg=document.createElement('div');
+    msg.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#0a0e16;border:1px solid #00ff41;border-radius:16px;padding:32px 48px;text-align:center;z-index:99999;font-family:Share Tech Mono,monospace;box-shadow:0 0 60px rgba(0,255,65,0.3)';
+    msg.innerHTML='<div style="font-size:32px;margin-bottom:12px">⚡</div><div style="color:#00ff41;font-size:18px;letter-spacing:4px;margin-bottom:8px">SAYAN</div><div style="color:#6b7280;font-size:12px;letter-spacing:2px">Built this. One dev. Zero limits.</div><div style="color:#4a5568;font-size:11px;margin-top:16px;letter-spacing:1px">click to close</div>';
+    msg.onclick=()=>msg.remove();
+    document.body.appendChild(msg);
+    keyBuffer='';
+  }
+});
+</script>
+</body>
+</html>
