@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who Is Tracking You? — by Sayan</title>
+<meta name="author" content="Sayan">
+<meta name="description" content="See exactly what your browser leaks. Built by Sayan.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060810;--s1:#0a0e16;--s2:#0f1520;--border:#1a2535;--border2:#243040;--green:#00ff41;--red:#ff2d55;--yellow:#ffd60a;--blue:#0af0ff;--purple:#bf5af2;--orange:#ff9f0a;--text:#c9d1d9;--muted:#4a5568;--muted2:#6b7280;--font-mono:'Share Tech Mono',monospace;--font-display:'Rajdhani',sans-serif;--font-body:'Inter',sans-serif;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;cursor:none}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.012) 2px,rgba(0,255,65,0.012) 4px);pointer-events:none;z-index:9999}
+#cursor{position:fixed;width:10px;height:10px;background:var(--green);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--green);transition:width .2s,height .2s}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(0,255,65,0.4);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:all .12s ease}
+#matrixCanvas{position:fixed;inset:0;z-index:0;opacity:.05}
+.app{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:40px 20px 100px}
+
+/* TERMINAL BAR */
+.term-bar{background:var(--s1);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:12px 20px;display:flex;align-items:center;gap:12px}
+.term-dots{display:flex;gap:6px}
+.term-dot{width:12px;height:12px;border-radius:50%}
+.term-dot.r{background:#ff5f57}.term-dot.y{background:#febc2e}.term-dot.g{background:#28c840}
+.term-title{font-family:var(--font-mono);font-size:12px;color:var(--muted2);flex:1;text-align:center}
+.term-sayan{font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:2px}
+
+/* HERO */
+.hero{background:var(--s1);border:1px solid var(--border);border-top:none;padding:52px 40px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,45,85,0.06),transparent 70%);pointer-events:none}
+
+.scan-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);border-radius:99px;padding:6px 18px;font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--red);text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeIn .5s .2s forwards}
+.scan-badge-dot{width:6px;height:6px;background:var(--red);border-radius:50%;animation:blink .8s infinite;box-shadow:0 0 6px var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.hero-title{font-family:var(--font-display);font-size:clamp(44px,9vw,100px);font-weight:700;line-height:.92;letter-spacing:3px;margin-bottom:20px;opacity:0;animation:fadeIn .5s .3s forwards}
+.hero-title .t-red{color:var(--red);text-shadow:0 0 30px rgba(255,45,85,.5)}
+.hero-title .t-green{color:var(--green);text-shadow:0 0 30px rgba(0,255,65,.4)}
+.hero-title .t-white{color:#fff}
+
+.hero-sub{font-size:15px;color:var(--muted2);max-width:500px;margin:0 auto 36px;line-height:1.7;font-weight:300;opacity:0;animation:fadeIn .5s .4s forwards}
+
+/* RISK METER */
+.risk-wrap{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:0;opacity:0;animation:fadeIn .5s .5s forwards}
+.risk-card{background:var(--s2);border:1px solid var(--border2);border-radius:16px;padding:24px 36px;text-align:center;position:relative;overflow:hidden}
+.risk-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(255,45,85,0.08),transparent 70%);pointer-events:none}
+.risk-card-label{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.risk-score{font-family:var(--font-mono);font-size:72px;font-weight:400;line-height:1;color:var(--red);text-shadow:0 0 40px rgba(255,45,85,.6);transition:all .4s}
+.risk-level{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:3px;color:var(--red);text-transform:uppercase;margin-top:4px;transition:color .4s}
+.risk-sub{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:1px}
+
+/* SCAN PROGRESS */
+.scan-wrap{background:var(--s1);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:18px 40px;margin-bottom:28px}
+.scan-head{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;color:var(--muted2);margin-bottom:10px}
+.scan-track{height:2px;background:var(--border);border-radius:99px;overflow:hidden}
+.scan-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:99px;width:0%;transition:width .3s;box-shadow:0 0 12px rgba(0,255,65,.5)}
+
+/* SECTIONS */
+.sec{margin-bottom:28px}
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.sec-icon{font-size:18px;width:28px;text-align:center}
+.sec-title{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:1px}
+.sec-badge{margin-left:auto;font-family:var(--font-mono);font-size:9px;padding:3px 10px;border-radius:99px;letter-spacing:2px}
+.b-danger{background:rgba(255,45,85,.12);color:var(--red);border:1px solid rgba(255,45,85,.3)}
+.b-warn{background:rgba(255,214,10,.08);color:var(--yellow);border:1px solid rgba(255,214,10,.25)}
+.b-safe{background:rgba(0,255,65,.06);color:var(--green);border:1px solid rgba(0,255,65,.2)}
+.b-info{background:rgba(10,240,255,.06);color:var(--blue);border:1px solid rgba(10,240,255,.2)}
+
+/* DATA ROWS */
+.data-grid{display:flex;flex-direction:column;gap:8px}
+.dr{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;transition:all .3s;opacity:0;animation:slideIn .4s forwards}
+.dr:hover{border-color:var(--border2);transform:translateX(3px)}
+.dr.danger{border-left:3px solid var(--red)}
+.dr.warn{border-left:3px solid var(--yellow)}
+.dr.safe{border-left:3px solid var(--green)}
+.dr.info{border-left:3px solid var(--blue)}
+.dr-icon{font-size:20px;width:30px;text-align:center;flex-shrink:0}
+.dr-content{flex:1;min-width:0}
+.dr-label{font-size:10px;font-family:var(--font-mono);color:var(--muted2);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.dr-val{font-family:var(--font-mono);font-size:14px;color:var(--text);word-break:break-all;line-height:1.4}
+.dr-val.loading{color:var(--muted);animation:pulse 1s infinite}
+.dr-val.v-red{color:var(--red)}
+.dr-val.v-yellow{color:var(--yellow)}
+.dr-val.v-green{color:var(--green)}
+.dr-val.v-blue{color:var(--blue)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.rpill{font-family:var(--font-mono);font-size:9px;padding:3px 8px;border-radius:99px;flex-shrink:0;letter-spacing:1px}
+.rp-h{background:rgba(255,45,85,.12);color:var(--red)}
+.rp-m{background:rgba(255,214,10,.08);color:var(--yellow)}
+.rp-l{background:rgba(0,255,65,.06);color:var(--green)}
+
+/* FINGERPRINT */
+.fp-card{background:var(--s1);border:1px solid rgba(255,45,85,.3);border-radius:14px;padding:28px;margin-bottom:28px;text-align:center;position:relative;overflow:hidden}
+.fp-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,45,85,.05),transparent 70%);pointer-events:none}
+.fp-title{font-family:var(--font-mono);font-size:10px;letter-spacing:4px;color:var(--muted2);text-transform:uppercase;margin-bottom:16px}
+.fp-hash{font-family:var(--font-mono);font-size:clamp(13px,2.5vw,20px);color:var(--red);letter-spacing:3px;word-break:break-all;line-height:1.7;text-shadow:0 0 20px rgba(255,45,85,.3);margin-bottom:16px}
+.fp-sub{font-size:13px;color:var(--muted2);line-height:1.7;max-width:500px;margin:0 auto}
+
+/* TRACKER GRID */
+.tracker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:28px}
+.tc{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:all .3s;cursor:default}
+.tc:hover{transform:translateY(-2px)}
+.tc.active{border-color:rgba(255,45,85,.4);background:rgba(255,45,85,.05);box-shadow:0 0 20px rgba(255,45,85,.08)}
+.tc-emoji{font-size:26px;margin-bottom:8px}
+.tc-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.tc-status{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted)}
+.tc.active .tc-status{color:var(--red)}
+.tc-pulse{display:inline-block;width:5px;height:5px;background:var(--red);border-radius:50%;animation:blink .8s infinite;margin-right:4px;vertical-align:middle}
+
+/* TIPS */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:28px}
+.tip{background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:12px;padding:18px;transition:transform .2s}
+.tip:hover{transform:translateY(-2px)}
+.tip-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tip-body{font-size:12px;color:var(--muted2);line-height:1.6}
+
+/* FOOTER */
+.foot{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.foot-text{font-family:var(--font-mono);font-size:11px;color:var(--muted2);line-height:1.7}
+.foot-text strong{color:var(--green)}
+.foot-btns{display:flex;gap:8px}
+.btn{padding:9px 18px;border-radius:8px;border:1px solid var(--border2);background:none;color:var(--text);font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.btn:hover{background:var(--border2)}
+.btn.p{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
+.btn.p:hover{background:#00cc33}
+
+/* CREDIT */
+.credit{position:fixed;bottom:20px;right:20px;background:var(--s1);border:1px solid var(--border2);border-radius:99px;padding:8px 18px;font-family:var(--font-mono);font-size:11px;color:var(--green);z-index:9996;letter-spacing:2px;box-shadow:0 0 20px rgba(0,255,65,.1);opacity:0;animation:fadeIn 1s 2s forwards;display:flex;align-items:center;gap:8px}
+.credit::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.dr:nth-child(1){animation-delay:.05s}.dr:nth-child(2){animation-delay:.1s}.dr:nth-child(3){animation-delay:.15s}.dr:nth-child(4){animation-delay:.2s}.dr:nth-child(5){animation-delay:.25s}.dr:nth-child(6){animation-delay:.3s}.dr:nth-child(7){animation-delay:.35s}.dr:nth-child(8){animation-delay:.4s}
+
+@media(max-width:600px){.hero{padding:32px 20px}.scan-wrap{padding:16px 20px}.risk-score{font-size:56px}.fp-hash{font-size:12px;letter-spacing:1px}.term-sayan{display:none}}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="matrixCanvas"></canvas>
+<div class="credit">Built by Sayan</div>
+<div class="app">
+
+<div class="term-bar">
+  <div class="term-dots"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div></div>
+  <div class="term-title">privacy-scanner.exe — active session</div>
+  <div class="term-sayan">by SAYAN</div>
+</div>
+
+<div class="hero">
+  <div class="scan-badge"><span class="scan-badge-dot"></span>Live Browser Scan Active</div>
+  <h1 class="hero-title">
+    <span class="t-red">WHO</span> <span class="t-white">IS</span><br>
+    <span class="t-green">TRACKING</span><br>
+    <span class="t-white">YOU?</span>
+  </h1>
+  <p class="hero-sub">Your browser silently leaks your identity to every website you visit. This page exposes exactly what they can see — in real time, right now.</p>
+  <div class="risk-wrap">
+    <div class="risk-card">
+      <div class="risk-card-label">Privacy Risk Score</div>
+      <div class="risk-score" id="riskScore">0</div>
+      <div class="risk-level" id="riskLevel">Scanning...</div>
+      <div class="risk-sub">out of 100 · updated live</div>
+    </div>
+  </div>
+</div>
+
+<div class="scan-wrap">
+  <div class="scan-head">
+    <span id="scanStatus">Initializing scanner...</span>
+    <span id="scanPct">0%</span>
+  </div>
+  <div class="scan-track"><div class="scan-fill" id="scanBar"></div></div>
+  </div>
