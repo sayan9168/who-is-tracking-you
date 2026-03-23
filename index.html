@@ -175,3 +175,85 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
   <div class="scan-track"><div class="scan-fill" id="scanBar"></div></div>
   </div>
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon">🌐</span><div class="sec-title">Network Identity</div><span class="sec-badge b-danger">HIGH RISK</span></div>
+  <div class="data-grid">
+    <div class="dr danger"><div class="dr-icon">📍</div><div class="dr-content"><div class="dr-label">IP Address</div><div class="dr-val loading" id="d-ip">Detecting...</div></div><span class="rpill rp-h">HIGH</span></div>
+    <div class="dr danger"><div class="dr-icon">🗺️</div><div class="dr-content"><div class="dr-label">Your City & Country</div><div class="dr-val loading" id="d-location">Detecting...</div></div><span class="rpill rp-h">HIGH</span></div>
+    <div class="dr danger"><div class="dr-icon">🏢</div><div class="dr-content"><div class="dr-label">Internet Provider (ISP)</div><div class="dr-val loading" id="d-isp">Detecting...</div></div><span class="rpill rp-h">HIGH</span></div>
+    <div class="dr info"><div class="dr-icon">🌍</div><div class="dr-content"><div class="dr-label">Timezone</div><div class="dr-val v-blue" id="d-timezone">—</div></div><span class="rpill rp-m">MED</span></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon">💻</span><div class="sec-title">Your Device</div><span class="sec-badge b-warn">MEDIUM RISK</span></div>
+  <div class="data-grid">
+    <div class="dr warn"><div class="dr-icon">🖥️</div><div class="dr-content"><div class="dr-label">Operating System</div><div class="dr-val v-yellow" id="d-os">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">🌐</div><div class="dr-content"><div class="dr-label">Browser & Version</div><div class="dr-val v-yellow" id="d-browser">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">📱</div><div class="dr-content"><div class="dr-label">Device Type</div><div class="dr-val v-yellow" id="d-device">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">🖥️</div><div class="dr-content"><div class="dr-label">Screen Resolution & Color Depth</div><div class="dr-val v-yellow" id="d-screen">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">🔋</div><div class="dr-content"><div class="dr-label">Battery Level</div><div class="dr-val v-yellow" id="d-battery">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">💾</div><div class="dr-content"><div class="dr-label">Device Memory (RAM)</div><div class="dr-val v-yellow" id="d-memory">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">⚙️</div><div class="dr-content"><div class="dr-label">CPU Logical Cores</div><div class="dr-val v-yellow" id="d-cpu">—</div></div><span class="rpill rp-l">LOW</span></div>
+    <div class="dr info"><div class="dr-icon">🗣️</div><div class="dr-content"><div class="dr-label">Browser Language</div><div class="dr-val v-blue" id="d-lang">—</div></div><span class="rpill rp-l">LOW</span></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon">🔍</span><div class="sec-title">Browser Capabilities Exposed</div><span class="sec-badge b-warn">FINGERPRINTING</span></div>
+  <div class="data-grid">
+    <div class="dr danger"><div class="dr-icon">🍪</div><div class="dr-content"><div class="dr-label">Cookies</div><div class="dr-val" id="d-cookies">—</div></div><span class="rpill rp-h">HIGH</span></div>
+    <div class="dr danger"><div class="dr-icon">📦</div><div class="dr-content"><div class="dr-label">Local Storage</div><div class="dr-val" id="d-storage">—</div></div><span class="rpill rp-h">HIGH</span></div>
+    <div class="dr danger"><div class="dr-icon">🎮</div><div class="dr-content"><div class="dr-label">WebGL GPU Fingerprint</div><div class="dr-val" id="d-webgl">—</div></div><span class="rpill rp-h">HIGH</span></div>
+    <div class="dr warn"><div class="dr-icon">📶</div><div class="dr-content"><div class="dr-label">Connection Type & Speed</div><div class="dr-val" id="d-connection">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">🔔</div><div class="dr-content"><div class="dr-label">Notification Permission</div><div class="dr-val" id="d-notif">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr warn"><div class="dr-icon">📷</div><div class="dr-content"><div class="dr-label">Camera Permission</div><div class="dr-val" id="d-camera">—</div></div><span class="rpill rp-m">MED</span></div>
+    <div class="dr info"><div class="dr-icon">🕐</div><div class="dr-content"><div class="dr-label">Your Local Time</div><div class="dr-val v-blue" id="d-time">—</div></div><span class="rpill rp-l">LOW</span></div>
+    <div class="dr info"><div class="dr-icon">🌓</div><div class="dr-content"><div class="dr-label">Dark/Light Mode Preference</div><div class="dr-val v-blue" id="d-theme">—</div></div><span class="rpill rp-l">LOW</span></div>
+  </div>
+</div>
+
+<div class="fp-card">
+  <div class="fp-title">🔴 Your Unique Browser Fingerprint — Generated Live</div>
+  <div class="fp-hash" id="fpHash">Calculating fingerprint hash...</div>
+  <p class="fp-sub">This unique ID is silently generated from your browser, screen, GPU, fonts & hardware. Websites use this to track you <strong style="color:var(--red)">even in Incognito mode</strong>, across VPNs, and after clearing all cookies. You cannot easily escape it.</p>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon">👁️</span><div class="sec-title">Who Can See This Right Now</div><span class="sec-badge b-danger">ACTIVE TRACKERS</span></div>
+  <div class="tracker-grid">
+    <div class="tc active"><div class="tc-emoji">🔵</div><div class="tc-name">Facebook</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+    <div class="tc active"><div class="tc-emoji">🔴</div><div class="tc-name">Google</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+    <div class="tc active"><div class="tc-emoji">🟠</div><div class="tc-name">Amazon</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+    <div class="tc active"><div class="tc-emoji">🟣</div><div class="tc-name">Your ISP</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+    <div class="tc active"><div class="tc-emoji">⚫</div><div class="tc-name">Data Brokers</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+    <div class="tc active"><div class="tc-emoji">🟡</div><div class="tc-name">Ad Networks</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+    <div class="tc active"><div class="tc-emoji">🔷</div><div class="tc-name">Microsoft</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+    <div class="tc active"><div class="tc-emoji">🟤</div><div class="tc-name">TikTok</div><div class="tc-status"><span class="tc-pulse"></span>TRACKING</div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon">🛡️</span><div class="sec-title">How to Protect Yourself</div><span class="sec-badge b-safe">ACTION ITEMS</span></div>
+  <div class="tips-grid">
+    <div class="tip"><div class="tip-title">🦊 Firefox + uBlock Origin</div><div class="tip-body">Blocks trackers, ads, and fingerprinting scripts. Free and open source.</div></div>
+    <div class="tip"><div class="tip-title">🔒 Use a Trusted VPN</div><div class="tip-body">Hides your real IP and location from websites and your ISP.</div></div>
+    <div class="tip"><div class="tip-title">🐋 Brave Browser</div><div class="tip-body">Built-in fingerprint randomization. Blocks trackers by default.</div></div>
+    <div class="tip"><div class="tip-title">🧅 Tor Browser</div><div class="tip-body">Maximum privacy. Routes traffic through 3+ encrypted servers.</div></div>
+    <div class="tip"><div class="tip-title">🍪 Clear Cookies Often</div><div class="tip-body">Removes cookie trackers but fingerprinting still works without them.</div></div>
+    <div class="tip"><div class="tip-title">📵 Use Privacy-focused DNS</div><div class="tip-body">Use 1.1.1.1 (Cloudflare) or 9.9.9.9 (Quad9) to stop DNS tracking.</div></div>
+  </div>
+</div>
+
+<div class="foot">
+  <div class="foot-text">
+    This tool collects <strong>zero data</strong>. Everything runs locally in your browser.<br>
+    No backend · No server · No cookies · Built by <strong>Sayan</strong> 🚀
+  </div>
+  <div class="foot-btns">
+    <button class="btn" onclick="copyLink()">🔗 Copy Link</button>
+    <button class="btn p" onclick="shareTwitter()">𝕏 Share Score</button>
+  </div>
+</div>
+
+  </div>
