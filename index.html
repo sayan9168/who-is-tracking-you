@@ -117,7 +117,40 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .tip-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .tip-body{font-size:12px;color:var(--muted2);line-height:1.6}
 
-/* FOOTER */
+<!-- SEO EDUCATIONAL SECTION -->
+<div style="background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:36px;margin-bottom:28px;max-width:980px">
+
+  <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:4px;color:var(--muted2);text-transform:uppercase;margin-bottom:24px">📚 How This Works — Technical Guide</div>
+
+  <h2 style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:1px">Browser Fingerprinting: How Your Browser Leaks Data</h2>
+  <p style="font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:20px">Browser fingerprinting is a powerful tracking technique that websites use to identify you without cookies. Even in Incognito mode, your browser silently exposes a unique combination of hardware and software details — screen resolution, installed fonts, GPU model, CPU cores, timezone, and language settings. When combined, these data points create a fingerprint so unique that it can identify you across different sessions, devices, and even VPNs. This is why simply clearing your cookies or using a private window does not make you anonymous online.</p>
+
+  <h2 style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:1px">IP Address & Geolocation: How Your Location Is Tracked</h2>
+  <p style="font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:20px">Every device connected to the internet has an IP address — a unique numerical label assigned by your Internet Service Provider (ISP). This IP address reveals your approximate geographic location, your ISP name, and sometimes even your organization. Websites, advertisers, and even governments use IP-based geolocation to determine which country, city, or neighborhood you are browsing from. Using a VPN can mask your real IP address, but many VPN providers still leak DNS requests, which can expose your real location through a technique called DNS fingerprinting.</p>
+
+  <h2 style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:1px">How JavaScript Reads Your Hardware Details</h2>
+  <p style="font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:20px">Modern browsers expose hardware information to JavaScript through standard Web APIs. The <code style="background:rgba(10,240,255,0.08);color:var(--blue);padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:13px">navigator.hardwareConcurrency</code> property returns the number of logical CPU cores. The <code style="background:rgba(10,240,255,0.08);color:var(--blue);padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:13px">navigator.deviceMemory</code> API reveals how much RAM your device has. The <code style="background:rgba(10,240,255,0.08);color:var(--blue);padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:13px">navigator.getBattery()</code> API exposes your battery level and charging status in real time. The <code style="background:rgba(10,240,255,0.08);color:var(--blue);padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:13px">WebGL</code> API can query your GPU vendor and renderer string — making your graphics card a powerful fingerprinting vector. All of this data is available to any website you visit, without any permission dialog.</p>
+
+  <h2 style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:1px">Privacy Risk Score: How It Is Calculated</h2>
+  <p style="font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:20px">The Privacy Risk Score shown on this page is calculated by analyzing multiple data exposure vectors in your browser. Each leaked data point — IP address, precise location, GPU fingerprint, enabled cookies, battery status — contributes a weighted risk value to the total score. A score above 75 means your browser is highly trackable by advertisers and data brokers. A score between 45 and 75 indicates moderate risk. Below 45 suggests you have taken some privacy precautions. The score is computed entirely in your browser — no data is ever sent to any server.</p>
+
+  <h2 style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:1px">Who Is Tracking You Right Now?</h2>
+  <p style="font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:20px">Major technology companies including Google, Facebook, Amazon, Microsoft, and TikTok deploy tracking scripts on millions of websites. These scripts collect your browsing history, device fingerprint, location, and behavioral patterns to build detailed advertising profiles. Data brokers purchase this information and resell it to insurers, employers, and governments. Your ISP can also log every website you visit and sell this data in countries without strong privacy laws. The only effective defenses are a combination of a reputable VPN, a privacy-focused browser like Firefox or Brave, and script-blocking extensions like uBlock Origin.</p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">Browser Fingerprinting</span>
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">IP Address Tracking</span>
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">Privacy Risk Score</span>
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">WebGL GPU Fingerprint</span>
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">Geolocation Tracking</span>
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">navigator.getBattery()</span>
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">JavaScript Hardware API</span>
+    <span style="background:rgba(10,240,255,0.06);border:1px solid rgba(10,240,255,0.2);color:var(--blue);padding:4px 14px;border-radius:99px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px">Online Privacy Protection</span>
+  </div>
+
+</div>
+  
+  /* FOOTER */
 .foot{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
 .foot-text{font-family:var(--font-mono);font-size:11px;color:var(--muted2);line-height:1.7}
 .foot-text strong{color:var(--green)}
